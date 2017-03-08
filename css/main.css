@@ -1699,7 +1699,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #91fa2e;
+  background: #f7ab45;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2738,7 +2738,7 @@ pre .javascript .function {
 .sidebar-inner {
   box-sizing: border-box;
   width: 240px;
-  color: #555;
+  color: #a6a6a6;
   background: #fff;
   box-shadow: initial;
   border-radius: initial;
@@ -2760,7 +2760,7 @@ pre .javascript .function {
   clear: both;
 }
 .sidebar a {
-  color: #555;
+  color: #a6a6a6;
 }
 .sidebar a:hover {
   color: #222;

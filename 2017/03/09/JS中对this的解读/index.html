@@ -1,0 +1,1109 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="javascript," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="原文：http://www.jianshu.com/p/d647aa6d1ae6
+
+以前在JS的学习过程中经常会遇见调用this的情况，如果题目稍微简单我就会觉得“嗯。。。 this也不过如此嘛”；若是题目稍难我会去翻答案，然后会认为this其实也没想象中那么难。
+如此反复多次，我便反思，才发现是我在学习过程中，对一些概念理解得不是很清楚，但是又想要通过一些方式把它记下来，于是就很容易草率的给这些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS中对this的解读">
+<meta property="og:url" content="https://insistenceofgream.github.io/2017/03/09/JS中对this的解读/index.html">
+<meta property="og:site_name" content="Sun in The Rainny Day">
+<meta property="og:description" content="原文：http://www.jianshu.com/p/d647aa6d1ae6
+
+以前在JS的学习过程中经常会遇见调用this的情况，如果题目稍微简单我就会觉得“嗯。。。 this也不过如此嘛”；若是题目稍难我会去翻答案，然后会认为this其实也没想象中那么难。
+如此反复多次，我便反思，才发现是我在学习过程中，对一些概念理解得不是很清楚，但是又想要通过一些方式把它记下来，于是就很容易草率的给这些">
+<meta property="og:image" content="http://jbcdn2.b0.upaiyun.com/2017/02/1eec352f3aa8ccdd6d4142ab78f1ff30.png">
+<meta property="og:updated_time" content="2017-03-09T02:36:06.233Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JS中对this的解读">
+<meta name="twitter:description" content="原文：http://www.jianshu.com/p/d647aa6d1ae6
+
+以前在JS的学习过程中经常会遇见调用this的情况，如果题目稍微简单我就会觉得“嗯。。。 this也不过如此嘛”；若是题目稍难我会去翻答案，然后会认为this其实也没想象中那么难。
+如此反复多次，我便反思，才发现是我在学习过程中，对一些概念理解得不是很清楚，但是又想要通过一些方式把它记下来，于是就很容易草率的给这些">
+<meta name="twitter:image" content="http://jbcdn2.b0.upaiyun.com/2017/02/1eec352f3aa8ccdd6d4142ab78f1ff30.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://insistenceofgream.github.io/2017/03/09/JS中对this的解读/"/>
+
+
+
+
+
+  <title> JS中对this的解读 | Sun in The Rainny Day </title>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c9495ad7a52c62efe17442c1adfebcf9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sun in The Rainny Day</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录前端成长点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://insistenceofgream.github.io/2017/03/09/JS中对this的解读/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="YingJian Shi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sun in The Rainny Day">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                JS中对this的解读
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-09T09:46:24+08:00">
+                2017-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web前端/" itemprop="url" rel="index">
+                    <span itemprop="name">web前端</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/09/JS中对this的解读/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/09/JS中对this的解读/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="原文：http-www-jianshu-com-p-d647aa6d1ae6"><a href="#原文：http-www-jianshu-com-p-d647aa6d1ae6" class="headerlink" title="原文：http://www.jianshu.com/p/d647aa6d1ae6"></a>原文：<a href="http://www.jianshu.com/p/d647aa6d1ae6" title="波同学" target="_blank" rel="external">http://www.jianshu.com/p/d647aa6d1ae6</a></h3><p><font size="3"></font></p>
+<blockquote>
+<p>以前在JS的学习过程中经常会遇见调用this的情况，如果题目稍微简单我就会觉得“嗯。。。 this也不过如此嘛”；若是题目稍难我会去翻答案，然后会认为this其实也没想象中那么难。</p>
+<p>如此反复多次，我便反思，才发现是我在学习过程中，对一些概念理解得不是很清楚，但是又想要通过一些方式把它记下来，于是就很容易草率的给这些概念定下一些方便自己记忆的有偏差的结论。</p>
+</blockquote>
+<a id="more"></a>
+<p> 所以，我认为需要有这样一篇文章，来帮助大家全方位的解读this。让大家对this，有一个正确的，全面的认知。</p>
+<p>在这之前，我们需要来回顾一下执行上下文。如下图：<img src="http://jbcdn2.b0.upaiyun.com/2017/02/1eec352f3aa8ccdd6d4142ab78f1ff30.png" alt=""></p>
+<p>执行上下文生命周期<br>在执行上下文的创建阶段，会分别生成变量对象，建立作用域链，确定this指向。其中变量对象与作用域链我们都已经仔细总结过了，而这里的关键，就是确定this指向。</p>
+<p>在这里，我们需要得出一个非常重要一定要牢记于心的结论，<big><strong>this的指向，是在函数被调用的时候确定的</strong></big>。也就是执行上下文被创建时确定的。因此我们可以很容易就能理解到，一个函数中的this指向，可以是非常灵活的。比如下面的例子中，同一个函数由于调用方式的不同，this指向了不一样的对象。</p>
+<pre><code>var a = 10;
+var obj = {
+    a: 20
+}
+
+function fn () {
+    console.log(this.a);
+}
+
+fn(); // 10
+fn.call(obj); // 20
+</code></pre><p>除此之外，<big><strong>在函数执行过程中，this一旦被确定，就不可更改了</strong>。</big></p>
+<pre><code>var a = 10;
+var obj = {
+    a: 20
+}
+
+function fn () {
+    this = obj; // 这句话试图修改this，运行后会报错
+    console.log(this.a);
+}
+
+fn();
+</code></pre><p><strong>一、全局对象中的this</strong></p>
+<p>关于全局对象的this，我之前在总结变量对象的时候提到过，它是一个比较特殊的存在。全局环境中的this，指向它本身。因此，这也相对简单，没有那么多复杂的情况需要考虑。</p>
+<pre><code>// 通过this绑定到全局对象
+this.a2 = 20;
+
+// 通过声明绑定到变量对象，但在全局环境中，变量对象就是它自身
+var a1 = 10;
+
+// 仅仅只有赋值操作，标识符会隐式绑定到全局对象
+a3 = 30;
+
+// 输出结果会全部符合预期
+console.log(a1);
+console.log(a2);
+console.log(a3);
+</code></pre><p><strong>二、函数中的this</strong></p>
+<p>在总结函数中this指向之前，我想我们有必要通过一些奇怪的例子，来感受一下函数中this的捉摸不定。</p>
+<pre><code>// demo01
+var a = 20;
+function fn() {
+    console.log(this.a);
+}
+fn();
+
+// demo02
+var a = 20;
+function fn() {
+    function foo() {
+        console.log(this.a);
+    }
+    foo();
+}
+fn();
+
+// demo03
+var a = 20;
+var obj = {
+    a: 10,
+    c: this.a + 20,
+    fn: function () {
+        return this.a;
+    }
+}
+
+console.log(obj.c);
+console.log(obj.fn());
+</code></pre><p>这几个例子需要读者老爷们花点时间稍微感受一下，如果你暂时没想明白怎么回事，也不用着急，我们一点一点来分析。</p>
+<p>分析之前，我们先直接了当抛出结论。</p>
+<p>在一个函数上下文中，this由调用者提供，由调用函数的方式来决定。<big><strong>如果调用者函数，被某一个对象所拥有，那么该函数在调用时，内部的this指向该对象。如果函数独立调用，那么该函数内部的this，则指向undefined。</strong></big>但是在非严格模式中，当this指向undefined时，它会被自动指向全局对象。</p>
+<p>从结论中我们可以看出，想要准确确定this指向，找到函数的调用者以及区分他是否是独立调用就变得十分关键。</p>
+<pre><code>// 为了能够准确判断，我们在函数内部使用严格模式，因为非严格模式会自动指向全局
+function fn() {
+    &apos;use strict&apos;;
+    console.log(this);
+}
+
+fn();  // fn是调用者，独立调用
+window.fn();  // fn是调用者，被window所拥有
+</code></pre><p>在上面的简单例子中，fn()作为独立调用者，按照定义的理解，它内部的this指向就为undefined。而window.fn()则因为fn被window所拥有，内部的this就指向了window对象。</p>
+<p>那么掌握了这个规则，现在回过头去看看上面的三个例子，通过添加/去除严格模式，那么你就会发现，原来this已经变得不那么虚无缥缈，已经有迹可循了。</p>
+<p>但是我们需要特别注意的是demo03。在demo03中，对象obj中的c属性使用this.a + 20来计算，而他的调用者obj.c并非是一个函数。因此他不适用于上面的规则，我们要对这种方式单独下一个结论。</p>
+<p><big><strong>当obj在全局声明时，无论obj.c在什么地方调用，这里的this都指向全局对象，而当obj在函数环境中声明时，这个this指向undefined，在非严格模式下，会自动转向全局对象。</strong></big>可运行下面的例子查看区别。</p>
+<pre><code>&apos;use strict&apos;;
+var a = 20;
+function foo () {
+    var a = 1;
+    var obj = {
+        a: 10, 
+        c: this.a + 20,
+        fn: function () {
+            return this.a;
+        }
+    }
+    return obj.c;
+
+}
+console.log(foo()); // 运行会报错
+</code></pre><blockquote>
+<ul>
+<li>实际开发中，并不推荐这样使用this；</li>
+<li>上面多次提到的严格模式，需要大家认真对待，因为在实际开发中，现在基本已经全部采用严格模式了，而最新的ES6，也是默认支持严格模式。</li>
+</ul>
+</blockquote>
+<p>再来看一些容易理解错误的例子，加深一下对调用者与是否独立运行的理解。</p>
+<pre><code>var a = 20;
+var foo = {
+    a: 10,
+    getA: function () {
+        return this.a;
+    }
+}
+console.log(foo.getA()); // 10
+
+var test = foo.getA;
+console.log(test());  // 20
+</code></pre><p>foo.getA()中，getA是调用者，他不是独立调用，被对象foo所拥有，因此它的this指向了foo。而test()作为调用者，尽管他与foo.getA的引用相同，但是它是独立调用的，因此this指向undefined，在非严格模式，自动转向全局window。</p>
+<p>稍微修改一下代码，大家自行理解。</p>
+<pre><code>var a = 20;
+function getA() {
+    return this.a;
+}
+var foo = {
+    a: 10,
+    getA: getA
+}
+console.log(foo.getA());  // 10
+</code></pre><p>灵机一动，再来一个。如下例子。</p>
+<pre><code>function foo() {
+    console.log(this.a)
+}
+
+function active(fn) {
+    fn(); // 真实调用者，为独立调用
+}
+
+var a = 20;
+var obj = {
+    a: 10,
+    getA: foo
+}
+
+active(obj.getA);
+</code></pre><p><strong>三、使用call，apply显示指定this</strong></p>
+<p>JavaScript内部提供了一种机制，让我们可以自行手动设置this的指向。它们就是call与apply。所有的函数都具有着两个方法。它们除了参数略有不同，其功能完全一样。它们的第一个参数都为this将要指向的对象。</p>
+<p>如下例子所示。fn并非属于对象obj的方法，但是通过call，我们将fn内部的this绑定为obj，因此就可以使用this.a访问obj的a属性了。这就是call/apply的用法。</p>
+<pre><code>function fn() {
+    console.log(this.a);
+}
+var obj = {
+    a: 20
+}
+
+fn.call(obj);
+</code></pre><p>而call与applay后面的参数，都是向将要执行的函数传递参数。其中call以一个一个的形式传递，apply以数组的形式传递。这是他们唯一的不同。</p>
+<pre><code>function fn(num1, num2) {
+    console.log(this.a + num1 + num2);
+}
+var obj = {
+    a: 20
+}
+
+fn.call(obj, 100, 10); // 130
+fn.apply(obj, [20, 10]); // 50
+</code></pre><p>因为call/apply的存在，这让JavaScript变得十分灵活。因此就让call/apply拥有了很多有用处的场景。简单总结几点，也欢迎大家补充。</p>
+<ul>
+<li><p>将类数组对象转换为数组</p>
+<pre><code>function exam(a, b, c, d, e) {
+
+    // 先看看函数的自带属性 arguments 什么是样子的
+    console.log(arguments);
+
+        // 使用call/apply将arguments转换为数组, 返回结果为数组，arguments自身不会改变
+    var arg = [].slice.call(arguments);
+
+    console.log(arg);
+}
+
+exam(2, 8, 9, 10, 3);
+
+// result: 
+// { &apos;0&apos;: 2, &apos;1&apos;: 8, &apos;2&apos;: 9, &apos;3&apos;: 10, &apos;4&apos;: 3 }
+// [ 2, 8, 9, 10, 3 ]
+// 
+// 也常常使用该方法将DOM中的nodelist转换为数组
+// [].slice.call( document.getElementsByTagName(&apos;li&apos;) );
+</code></pre></li>
+<li><p>根据自己的需要灵活修改this指向</p>
+<pre><code>var foo = {
+    name: &apos;joker&apos;,
+    showName: function() {
+      console.log(this.name);
+    }
+}
+var bar = {
+    name: &apos;rose&apos;
+}
+foo.showName.call(bar);
+</code></pre></li>
+<li>实现继承</li>
+</ul>
+<p>// 定义父级的构造函数</p>
+<pre><code>var Person = function(name, age) {
+    this.name = name;
+    this.age  = age;
+    this.gender = [&apos;man&apos;, &apos;woman&apos;];
+}
+
+// 定义子类的构造函数
+var Student = function(name, age, high) {
+
+    // use call
+    Person.call(this, name, age);
+    this.high = high;
+}
+Student.prototype.message = function() {
+    console.log(&apos;name:&apos;+this.name+&apos;, age:&apos;+this.age+&apos;, high:&apos;+this.high+&apos;, gender:&apos;+this.gender[0]+&apos;;&apos;);
+}
+
+new Student(&apos;xiaom&apos;, 12, &apos;150cm&apos;).message();
+
+// result
+// ----------
+// name:xiaom, age:12, high:150cm, gender:man;
+</code></pre><p>简单给有面向对象基础的朋友解释一下。在Student的构造函数中，借助call方法，将父级的构造函数执行了一次，相当于将Person中的代码，在Sudent中复制了一份，其中的this指向为从Student中new出来的实例对象。call方法保证了this的指向正确，因此就相当于实现了基层。Student的构造函数等同于下。</p>
+<pre><code>var Student = function(name, age, high) {
+    this.name = name;
+    this.age  = age;
+    this.gender = [&apos;man&apos;, &apos;woman&apos;];
+    // Person.call(this, name, age); 这一句话，相当于上面三句话，因此实现了继承
+    this.high = high;
+}
+</code></pre><ul>
+<li>在向其他执行上下文的传递中，确保this的指向保持不变</li>
+</ul>
+<p>如下面的例子中，我们期待的是getA被obj调用时，this指向obj，但是由于匿名函数的存在导致了this指向的丢失，在这个匿名函数中this指向了全局，因此我们需要想一些办法找回正确的this指向</p>
+<pre><code>var obj = {
+    a: 20,
+    getA: function() {
+        setTimeout(function() {
+            console.log(this.a)
+        }, 1000)
+    }
+}
+
+obj.getA();
+</code></pre><p>常规的解决办法很简单，就是使用一个变量，将this的引用保存起来。我们常常会用到这方法，但是我们也要借助上面讲到过的知识，来判断this是否在传递中被修改了，如果没有被修改，就没有必要这样使用了。</p>
+<pre><code>var obj = {
+    a: 20,
+    getA: function() {
+        var self = this;
+        setTimeout(function() {
+            console.log(self.a)
+        }, 1000)
+    }
+}
+</code></pre><p>另外就是借助闭包与apply方法，封装一个bind方法。</p>
+<pre><code>function bind(fn, obj) {
+    return function() {
+        return fn.apply(obj, arguments);
+    }
+}
+
+var obj = {
+    a: 20,
+    getA: function() {
+        setTimeout(bind(function() {
+            console.log(this.a)
+        }, this), 1000)
+    }
+}
+
+obj.getA();
+</code></pre><p>当然，也可以使用ES5中已经自带的bind方法。它与我上面封装的bind方法是一样的效果。</p>
+<pre><code>var obj = {
+    a: 20,
+    getA: function() {
+        setTimeout(function() {
+            console.log(this.a)
+        }.bind(this), 1000)
+    }
+}
+</code></pre><p><strong>四、构造函数与原型方法上的this</strong></p>
+<p>在封装对象的时候，我们几乎都会用到this，但是，只有少数人搞明白了在这个过程中的this指向，就算我们理解了原型，也不一定理解了this。所以这一部分，我认为将会为这篇文章最重要最核心的部分。理解了这里，将会对你学习JS面向对象产生巨大的帮助。</p>
+<p>结合下面的例子，我在例子抛出几个问题大家思考一下。</p>
+<pre><code>function Person(name, age) {
+
+    // 这里的this指向了谁?
+    this.name = name;
+    this.age = age;   
+}
+
+Person.prototype.getName = function() {
+
+    // 这里的this又指向了谁？
+    return this.name;
+}
+
+// 上面的2个this，是同一个吗，他们是否指向了原型对象？
+
+var p1 = new Person(&apos;Nick&apos;, 20);
+p1.getName();
+</code></pre><p>我们已经知道，this，是在函数调用过程中确定，因此，搞明白new的过程中到底发生了什么就变得十分重要。</p>
+<p>通过new操作符调用构造函数，会经历以下4个阶段。</p>
+<ol>
+<li>创建一个新的对象；</li>
+<li>将构造函数的this指向这个新对象；</li>
+<li>指向构造函数的代码，为这个对象添加属性，方法等；</li>
+<li>返回新对象。</li>
+</ol>
+<p>因此，当new操作符调用构造函数时，this其实指向的是这个新创建的对象，最后又将新的对象返回出来，被实例对象p1接收。因此，我们可以说，这个时候，构造函数的this，指向了新的实例对象，p1。</p>
+<p>而原型方法上的this就好理解多了，根据上边对函数中this的定义，p1.getName()中的getName为调用者，他被p1所拥有，因此getName中的this，也是指向了p1。</p>
+<blockquote>
+<p>好啦，我所知道的，关于this的一切，已经总结完了，希望大家在阅读之后，能够真正学到东西，然后给我点个赞^_^。如果你发现有什么错误，请在评论中指出，我会尽快修改。先谢过了。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"># javascript</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/06/hello/" rel="next" title="hello">
+                <i class="fa fa-chevron-left"></i> hello
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2017/03/09/JS中对this的解读/"
+     data-title="JS中对this的解读"
+     data-content=""
+     data-url="https://insistenceofgream.github.io/2017/03/09/JS中对this的解读/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/09/JS中对this的解读/"
+           data-title="JS中对this的解读" data-url="https://insistenceofgream.github.io/2017/03/09/JS中对this的解读/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="YingJian Shi" />
+          <p class="site-author-name" itemprop="name">YingJian Shi</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#原文：http-www-jianshu-com-p-d647aa6d1ae6"><span class="nav-number">1.</span> <span class="nav-text">原文：http://www.jianshu.com/p/d647aa6d1ae6</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-leaf"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">YingJian Shi</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"insistenceofdream"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+  
+
+</body>
+</html>
